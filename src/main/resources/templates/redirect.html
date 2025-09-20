@@ -1,0 +1,156 @@
+<!DOCTYPE HTML>
+<html lang="az" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" th:href="@{/css/style.css}" media="screen"/>
+    <link rel="stylesheet" th:href="@{/style.css}" media="screen"/>
+    <link rel="stylesheet" th:href="@{css/style.css}" media="screen"/>
+    <title>APUS Adapter</title>
+
+    <script th:inline="javascript">
+
+        var sec;
+        var counter;
+
+        function $(id) {
+            return document.getElementById(id);
+        }
+
+        function countDown() {
+            if (sec < 0) {
+                redirect();
+            } else {
+                counter.innerHTML = sec;
+            }
+            sec--;
+        }
+
+        function redirect() {
+            window.location = [[${template.url}]];
+        }
+
+        window.onload = function () {
+            form = $('form');
+
+
+            let lang = {
+                "AZ": {
+                    "E000001": "Avtorizasiya",
+                    "E000002": "Ödənişiniz təsdiqlənmişdir",
+                    "E000003": "Ödənişiniz qeydiyyatdan keçilməmişdir və ləğv olunur",
+                    "E000004": "Kart məlumatları düzgün daxil edilməyib",
+                    "E000005": "Sistem xəta/Səhv sorğu",
+                    "E000006": "Sizi yönəldiririk, xahiş olunur gözləyin və yaxud aşağıdaki düyməni basın",
+                    "E000007": "san.",
+                    "E000008": "Qayıtmaq"
+                },
+                "RU": {
+                    "E000001": "Authorization",
+                    "E000002": "The operation successfully completed",
+                    "E000003": "The operation failed due to system error",
+                    "E000004": "Operation declined due to incorrect information",
+                    "E000005": "Error/Invalid request",
+                    "E000006": "Please wait while You are redirected back or press the button below",
+                    "E000007": "sec.",
+                    "E000008": "Go back"
+                },
+                "EN": {
+                    "E000001": "Authorization",
+                    "E000002": "The operation successfully completed",
+                    "E000003": "The operation failed due to system error",
+                    "E000004": "Operation declined due to incorrect information",
+                    "E000005": "Error/Invalid request",
+                    "E000006": "Please wait while You are redirected back or press the button below",
+                    "E000007": "sec.",
+                    "E000008": "Go back"
+                }
+            }
+
+            let sessLang = document.getElementById('lang');
+            if (!lang.hasOwnProperty(sessLang)) {
+                sessLang = 'AZ'
+            }
+
+            $('auth').textContent = lang[sessLang].E000001;
+            $('redirect').textContent = lang[sessLang].E000006;
+            $('sec').textContent = lang[sessLang].E000007;
+            $('submitBtn').setAttribute('value', lang[sessLang].E000008);
+
+            if ($('success') != null)
+                $('success').textContent = lang[sessLang].E000002;
+
+            if ($('cancel') != null)
+                $('cancel').textContent = lang[sessLang].E000003;
+
+            if ($('wrong_data') != null)
+                $('wrong_data').textContent = lang[sessLang].E000004;
+
+            if ($('system_error') != null)
+                $('system_error').textContent = lang[sessLang].E000005;
+
+
+            sec = 15;
+            counter = $('counter');
+            window.setInterval(countDown, 1000);
+        }
+
+
+    </script>
+
+</head>
+<body>
+<table width="100%" height="100%" border="0">
+    <input id="lang" type="hidden" th:value="*{template.lang}">
+    <tr>
+        <td align="center" valign="middle">
+            <form id="form">
+                <h1 id="auth">${i18n.E000001}</h1>
+                <br/>
+
+                <div th:if="${template.type == '0'}">
+                    <img th:src="@{/images/ok.png}" width="48" height="48"/>
+                    <br/>
+                    <br/>
+                    <b id="success">${i18n.E000002}</b>
+                </div>
+
+                <div th:if="${template.type == '1'}">
+                    <img th:src="@{/images/error.png}" width="48" height="48"/>
+                    <br/>
+                    <br/>
+                    <p id="system_error" style="font-weight: bold"></p>
+                </div>
+
+
+                <div th:if="${template.type == '2'}">
+                    <img th:src="@{/images/warning.png}" width="48" height="48"/>
+                    <br/>
+                    <br/>
+                    <p id="cancel" style="font-weight: bold"></p>
+                </div>
+
+
+                <div th:if="${template.type == '3'}">
+                    <img th:src="@{/images/warning.png}" width="48" height="48"/>
+                    <br/>
+                    <br/>
+                    <p id="wrong_data" style="font-weight: bold"></p>
+                </div>
+
+
+                <br/>
+                <br/>
+                <span id="redirect"></span>
+                <br/>
+                <br/>
+                <span><span id="counter">30</span> <span id="sec"></span></span>
+                <br/>
+                <br/>
+                <input type="button" id="submitBtn" value="" onclick="redirect()"/>
+                <input type="hidden" name="jsessionid" id="session" th:value="${template.session}"/>
+            </form>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

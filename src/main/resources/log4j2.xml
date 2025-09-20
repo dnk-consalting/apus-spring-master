@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="error">
+    <Properties>
+        <Property name="name">apus</Property>
+        <Property name="main_log_path">/ecomm/tomcat8/logs</Property>
+        <Property name="application_log_path">${main_log_path}/${name}/application</Property>
+        <Property name="service_log_path">${main_log_path}/${name}/service</Property>
+        <Property name="http_log_path">${main_log_path}/${name}/http</Property>
+    </Properties>
+    <Appenders>
+        <Console name="console"/>
+        <RollingFile name="application_log_appender"
+                     filePattern="${application_log_path}/${name}-application-log-%d{yyyy-MM-dd}.log.gz"
+                     fileName="${application_log_path}/${name}-application.log">
+            <PatternLayout>
+                <pattern>{\"time\": \"%d{yyyy-MM-dd HH:mm:ss.SSS}\", \"level\":\"%-5level\", \"thread\":\"%t\", \"pid\":\"%pid\", \"pay_id\":\"%pay_id\", \"output\":\"%m\"}%n
+                </pattern>
+            </PatternLayout>
+            <Policies>
+                <OnStartupTriggeringPolicy/>
+                <TimeBasedTriggeringPolicy modulate="true" interval="1"/>
+            </Policies>
+            <DefaultRolloverStrategy>
+                <Delete maxDepth="1" basePath="${application_log_path}">
+                    <IfAll>
+                        <IfAccumulatedFileCount exceeds="33"/>
+                    </IfAll>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+        <RollingFile name="service_log_appender"
+                     filePattern="${service_log_path}/${name}-service-log-%d{yyyy-MM-dd}.log.gz"
+                     fileName="${service_log_path}/${name}-service.log">
+            <PatternLayout>
+                <pattern>[\"time\": \"%d{yyyy-MM-dd HH:mm:ss.SSS}\"] [\"level\":\"%-5level\"] [ \"pay_id\":\"%X{pay_id}\"] \"output\":\"%m\"%n
+                </pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy modulate="true" interval="1"/>
+            </Policies>
+            <DefaultRolloverStrategy>
+               <!-- <Delete maxDepth="1" basePath="${service_log_path}">
+                    <IfAll>
+                        <IfAccumulatedFileCount exceeds="33"/>
+                    </IfAll>
+                </Delete>-->
+            </DefaultRolloverStrategy>
+        </RollingFile>
+        <RollingFile name="http_log_appender"
+                     filePattern="${http_log_path}/${name}-http-log-%d{yyyy-MM-dd}.log.gz"
+                     fileName="${http_log_path}/${name}-http.log">
+            <PatternLayout>
+                <pattern>["time": "%d{yyyy-MM-dd HH:mm:ss.SSS}"] :"%m"%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy modulate="true" interval="1"/>
+            </Policies>
+            <DefaultRolloverStrategy>
+               <!-- <Delete maxDepth="1" basePath="${http_log_path}">
+                    <IfAll>
+                        <IfAccumulatedFileCount exceeds="33"/>
+                    </IfAll>
+                </Delete>-->
+            </DefaultRolloverStrategy>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Root includeLocation="true" level="info">
+            <AppenderRef ref="console"/>
+            <AppenderRef ref="application_log_appender"/>
+        </Root>
+        <AsyncLogger name="service_logger" includeLocation="false" level="info" additivity="false">
+            <AppenderRef ref="service_log_appender"/>
+        </AsyncLogger>
+        <AsyncLogger name="http_logger" includeLocation="false" level="info" additivity="false">
+            <AppenderRef ref="http_log_appender"/>
+        </AsyncLogger>
+    </Loggers>
+
+</Configuration>
